@@ -1,0 +1,24 @@
+jobs:
+  build:
+    environment:
+      name: env
+    name: Terraform Apply for deployment environment
+    runs-on: ubuntu-latest
+    steps:
+    - id: get_version
+      name: Get the version
+      run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+    - name: Fetch repo
+      uses: actions/checkout@v2
+    - name: Install Dagger CLI
+      run: curl -L https://dl.dagger.io/dagger/install.sh | DAGGER_VERSION=0.2.10
+        sh
+    - name: Run Dagger Build
+      run: dagger do build
+    - name: Run Dagger Test
+      run: dagger do test
+name: Terraform Apply for deployment environment
+"on":
+  push:
+    tags:
+    - '*'
